@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduler | Hospital Patient Scheduler</title>
+
+    <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8fc;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #1565c0;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.dashboard-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+}
+
+.dashboard-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.dashboard-number {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.waiting-card {
+    border-left: 5px solid #ffc107;
+}
+
+.treatment-card {
+    border-left: 5px solid #0d6efd;
+}
+
+.completed-card {
+    border-left: 5px solid #198754;
+}
+
+@media (max-width: 800px) {
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h1, h2 {
+            color: #1565c0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 18px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #1565c0;
+            color: white;
+        }
+
+        .remove {
+            background: #c62828;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #e3f2fd;
+        }
+
+        .algorithm {
+            margin: 15px 0;
+        }
+
+        .algorithm label {
+            display: inline-block;
+            margin-right: 25px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .metric {
+            background: #e3f2fd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .gantt {
+            display: flex;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .gantt-block {
+            min-width: 80px;
+            padding: 18px;
+            background: #bbdefb;
+            border: 1px solid #1565c0;
+            text-align: center;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+.priority-help {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+select#priority {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.waiting {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.in-treatment {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.status-badge.completed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+
+
+.treatment-explanation {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background: #f5f9ff;
+    border-left: 4px solid #1565c0;
+    border-radius: 6px;
+    color: #333;
+    font-size: 14px;
+}
+
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        🏥 Hospital Patient Scheduler
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/scheduler">Scheduler</a>
+        <a href="/compare">Compare</a>
+    </nav>
+</header>
+   
+<div class="container">
+
+    <div class="card">
+
+        <h1>Hospital Patient Scheduler</h1>
+
+      <p>Manage and prioritize patients based on medical urgency.</p>
+
+<div class="dashboard">
+
+    <div class="dashboard-card">
+        <h3>Total Patients</h3>
+        <div class="dashboard-number" id="totalPatients">0</div>
+    </div>
+
+    <div class="dashboard-card waiting-card">
+        <h3>Waiting</h3>
+        <div class="dashboard-number" id="waitingPatients">0</div>
+    </div>
+
+    <div class="dashboard-card treatment-card">
+        <h3>In Treatment</h3>
+        <div class="dashboard-number" id="treatmentPatients">0</div>
+    </div>
+
+    <div class="dashboard-card completed-card">
+        <h3>Completed</h3>
+        <div class="dashboard-number" id="completedPatients">0</div>
+    </div>
+
+</div>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Patient ID</label>
+                <input id="processId" value="P1">
+            </div>
+
+            <div>
+                <label>Patient Name</label>
+                <input id="taskName" placeholder="ECG Sampling">
+            </div>
+
+            <div>
+                <label>Arrival Time</label>
+                <input id="arrivalTime" type="number" min="0" value="0">
+            </div>
+
+            <div>
+                <label>Treatment Time</label>
+                <input id="burstTime" type="number" min="1" value="1">
+            </div>
+
+<div>
+    <label>Medical Priority</label>
+
+    <select id="priority">
+        <option value="">Select Medical Priority</option>
+        <option value="1">🔴 Emergency</option>
+        <option value="2">🟠 Urgent</option>
+        <option value="3">🟡 Normal</option>
+        <option value="4">🟢 Low</option>
+    </select>
+
+    <small class="priority-help">
+        Lower number = higher medical priority
+    </small>
+</div>         
+
+        </div>
+
+        <button onclick="addProcess()">
+            Add Patient
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+    <h2>Patients</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Patient</th>
+                <th>Arrival</th>
+                <th>Treatment</th>
+                <th>Medical Priority</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="processTable">
+
+            <tr>
+                <td colspan="7">
+                    No patients added yet.
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+    <div class="card">
+
+        <h2>Scheduling Algorithm</h2>
+
+        <div class="algorithm">
+
+            <label>
+                <input
+                    type="radio"
+                    name="algorithm"
+                    value="non-preemptive"
+                    checked>
+
+                Non-Preemptive Priority
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="algorithm"
+                    value="preemptive">
+
+                Preemptive Priority
+            </label>
+
+        </div>
+
+        <button onclick="runScheduler()">
+            ▶ Schedule Patients
+        </button>
+
+        <div id="status"></div>
+
+    </div>
+
+
+    <div
+        class="card"
+        id="resultsSection"
+        style="display:none;">
+
+        <h2>Scheduling Metrics</h2>
+
+        <div class="metrics">
+
+            <div class="metric">
+                <h3>Average Waiting Time</h3>
+                <div class="metric-value" id="avgWaiting">-</div>
+            </div>
+
+            <div class="metric">
+                <h3>Average Treatment Turnaround</h3>
+                <div class="metric-value" id="avgTurnaround">-</div>
+            </div>
+
+            <div class="metric">
+                <h3>Average Response Time</h3>
+                <div class="metric-value" id="avgResponse">-</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="card"
+        id="processResultsSection"
+        style="display:none;">
+
+        <h2>Patient Scheduling Results</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                   <th>Patient</th>
+<th>Arrival</th>
+<th>Treatment</th>
+<th>Medical Priority</th>
+<th>Treatment Completion</th>
+<th>Turnaround Time</th>
+<th>Waiting Time</th>
+<th>Response Time</th>
+                </tr>
+            </thead>
+
+            <tbody id="processResults"></tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="card"
+        id="ganttSection"
+        style="display:none;">
+
+        <h2>Gantt Chart</h2>
+
+        <div id="ganttChart" class="gantt"></div>
+
+<div id="treatmentExplanation" class="treatment-explanation"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let processes = [];
+
+function addProcess() {
+
+    const id =
+        document.getElementById("processId").value.trim();
+
+    const task =
+        document.getElementById("taskName").value.trim();
+
+    const arrival =
+        Number(document.getElementById("arrivalTime").value);
+
+    const burst =
+        Number(document.getElementById("burstTime").value);
+
+    const priority =
+        Number(document.getElementById("priority").value);
+
+
+    if (!id || !task) {
+        alert("Please enter Patient ID and Patient Name.");
+        return;
+    }
+
+    if (!priority) {
+        alert("Please select a Medical Priority.");
+        return;
+    }
+
+    if (arrival < 0 || burst <= 0) {
+        alert("Please enter valid Arrival Time and Treatment Time.");
+        return;
+    }
+
+    if (processes.some(p => p.id === id)) {
+        alert("This Patient ID already exists.");
+        return;
+    }
+
+
+    processes.push({
+        id: id,
+        task: task,
+        arrival: arrival,
+        burst: burst,
+        priority: priority,
+        status: "Waiting"
+    });
+
+
+    updateProcessTable();
+
+
+    document.getElementById("processId").value =
+        "P" + (processes.length + 1);
+
+    document.getElementById("taskName").value = "";
+
+    document.getElementById("arrivalTime").value = 0;
+
+    document.getElementById("burstTime").value = 1;
+
+    document.getElementById("priority").value = "";
+}
+
+function updateProcessTable() {
+
+    const table =
+        document.getElementById("processTable");
+
+    table.innerHTML = "";
+
+
+    processes.forEach((p, index) => {
+
+        const row =
+            document.createElement("tr");
+
+        const status = p.status || "Waiting";
+
+        row.innerHTML = `
+            <td>${p.id}</td>
+            <td>${p.task}</td>
+            <td>${p.arrival}</td>
+            <td>${p.burst}</td>
+            <td>${p.priority}</td>
+
+            <td>
+                <span class="status-badge ${status.toLowerCase().replace(" ", "-")}">
+                    ${status}
+                </span>
+            </td>
+
+            <td>
+                <button
+                    class="remove"
+                    onclick="removeProcess(${index})">
+                    Remove
+                </button>
+            </td>
+        `;
+
+        table.appendChild(row);
+
+    });
+
+
+    if (processes.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    No patients added yet.
+                </td>
+            </tr>
+        `;
+    }
+updateDashboard();
+}
+
+function updateDashboard() {
+
+    const total =
+        processes.length;
+
+    const waiting =
+        processes.filter(p => p.status === "Waiting").length;
+
+    const treatment =
+        processes.filter(p => p.status === "In Treatment").length;
+
+    const completed =
+        processes.filter(p => p.status === "Completed").length;
+
+
+    document.getElementById("totalPatients").textContent =
+        total;
+
+    document.getElementById("waitingPatients").textContent =
+        waiting;
+
+    document.getElementById("treatmentPatients").textContent =
+        treatment;
+
+    document.getElementById("completedPatients").textContent =
+        completed;
+}
+
+function removeProcess(index) {
+
+    processes.splice(index, 1);
+
+    updateProcessTable();
+}
+
+
+async function runScheduler() {
+
+    if (processes.length === 0) {
+
+        alert("Please add at least one process.");
+
+        return;
+    }
+
+
+    const algorithm =
+        document.querySelector(
+            'input[name="algorithm"]:checked'
+        ).value;
+
+
+    document.getElementById("status").textContent =
+        "Running scheduler...";
+
+
+    try {
+
+        const response =
+            await fetch("/api/schedule", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    algorithm: algorithm,
+                    processes: processes
+                })
+
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+        }
+
+
+        const result =
+            await response.json();
+
+processes.forEach(p => {
+
+    const scheduled =
+        result.processResults.find(
+            r => r.id === p.id
+        );
+
+    if (!scheduled) {
+        return;
+    }
+
+    const patientSegments =
+        result.gantt.filter(
+            segment => segment.processId === p.id
+        );
+
+    if (patientSegments.length === 0) {
+        p.status = "Waiting";
+        return;
+    }
+
+    const lastSegment =
+        patientSegments[patientSegments.length - 1];
+
+    if (
+        lastSegment.end === scheduled.completion
+    ) {
+        p.status = "Completed";
+    } else {
+        p.status = "In Treatment";
+    }
+
+});
+
+updateProcessTable();
+
+sessionStorage.setItem("schedulerResults", JSON.stringify(result));
+sessionStorage.setItem("schedulerProcesses", JSON.stringify(processes));
+
+
+        document.getElementById(
+            "resultsSection"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "processResultsSection"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "ganttSection"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "avgWaiting"
+        ).textContent =
+            result.averageWaiting.toFixed(2);
+
+
+        document.getElementById(
+            "avgTurnaround"
+        ).textContent =
+            result.averageTurnaround.toFixed(2);
+
+
+        document.getElementById(
+            "avgResponse"
+        ).textContent =
+            result.averageResponse.toFixed(2);
+
+
+        displayProcessResults(
+            result.processResults
+        );
+
+
+        displayGantt(
+            result.gantt
+        );
+
+
+        document.getElementById("status").textContent =
+            "Scheduling completed successfully.";
+
+    } catch (error) {
+
+        document.getElementById("status").textContent =
+            "Error: " + error.message;
+
+    }
+}
+
+
+function displayProcessResults(results) {
+
+    const table =
+        document.getElementById("processResults");
+
+    table.innerHTML = "";
+
+
+    results.forEach(result => {
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${result.id}</td>
+            <td>${result.arrival}</td>
+            <td>${result.burst}</td>
+            <td>${result.priority}</td>
+            <td>${result.completion}</td>
+            <td>${result.turnaround}</td>
+            <td>${result.waiting}</td>
+            <td>${result.response}</td>
+        `;
+
+        table.appendChild(row);
+
+    });
+}
+
+
+function displayGantt(gantt) {
+
+    const chart =
+        document.getElementById("ganttChart");
+
+    chart.innerHTML = "";
+
+
+    gantt.forEach(segment => {
+
+        const block =
+            document.createElement("div");
+
+        block.className = "gantt-block";
+
+        block.style.flex =
+            segment.end - segment.start;
+
+        block.innerHTML = `
+            <strong>${segment.processId}</strong>
+            <br>
+            ${segment.start} - ${segment.end}
+        `;
+
+                chart.appendChild(block);
+
+    });
+
+    const sequence = gantt
+        .filter(segment => segment.processId !== "IDLE")
+        .map(segment => segment.processId);
+
+    const uniqueSequence = [];
+
+    sequence.forEach(id => {
+        if (
+            uniqueSequence.length === 0 ||
+            uniqueSequence[uniqueSequence.length - 1] !== id
+        ) {
+            uniqueSequence.push(id);
+        }
+    });
+
+    const explanation =
+        document.getElementById("treatmentExplanation");
+
+    if (uniqueSequence.length > 0) {
+
+        const repeatedPatients = uniqueSequence.filter(
+            (id, index) =>
+                uniqueSequence.indexOf(id) !== index
+        );
+
+        if (repeatedPatients.length > 0) {
+
+            const patient =
+                repeatedPatients[0];
+
+            explanation.innerHTML = `
+                <strong>Treatment Sequence:</strong>
+                ${uniqueSequence.join(" → ")}
+                <br>
+                <strong>Preemption Detected:</strong>
+                ${patient} was interrupted and later resumed.
+            `;
+
+        } else {
+
+            explanation.innerHTML = `
+                <strong>Treatment Sequence:</strong>
+                ${uniqueSequence.join(" → ")}
+                <br>
+                <strong>No preemption detected.</strong>
+            `;
+
+        }
+
+    } else {
+
+        explanation.innerHTML = "";
+
+    }
+}
+
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    const savedProcesses =
+        sessionStorage.getItem("schedulerProcesses");
+
+    const savedResults =
+        sessionStorage.getItem("schedulerResults");
+
+    if (savedProcesses) {
+
+        processes =
+            JSON.parse(savedProcesses);
+
+        updateProcessTable();
+    }
+
+    if (savedResults) {
+
+        const result =
+            JSON.parse(savedResults);
+
+        document.getElementById(
+            "resultsSection"
+        ).style.display = "block";
+
+        document.getElementById(
+            "processResultsSection"
+        ).style.display = "block";
+
+        document.getElementById(
+            "ganttSection"
+        ).style.display = "block";
+
+        document.getElementById(
+            "avgWaiting"
+        ).textContent =
+            result.averageWaiting.toFixed(2);
+
+        document.getElementById(
+            "avgTurnaround"
+        ).textContent =
+            result.averageTurnaround.toFixed(2);
+
+        document.getElementById(
+            "avgResponse"
+        ).textContent =
+            result.averageResponse.toFixed(2);
+
+        displayProcessResults(
+            result.processResults
+        );
+
+        displayGantt(
+            result.gantt
+        );
+
+        document.getElementById("status").textContent =
+            "Previous scheduling results restored.";
+    }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gantt Chart - Hospital Patient Scheduler</title>
+
+    <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        .gantt-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .algorithm-name {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .gantt-chart {
+            display: flex;
+            align-items: stretch;
+            min-height: 100px;
+            margin: 40px 0 10px;
+            overflow-x: auto;
+        }
+
+        .gantt-block {
+            min-width: 100px;
+            padding: 25px 15px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #eef3f7;
+        }
+
+        .gantt-process {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .gantt-time {
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+        }
+
+        .timeline {
+            display: flex;
+            margin-top: 5px;
+        }
+
+        .timeline-value {
+            min-width: 100px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .gantt-container {
+                padding: 10px;
+            }
+
+            .chart-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">Hospital Patient Scheduler</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/scheduler">Scheduler</a>
+        <a href="/metrics">Performance Metrics</a>
+        <a href="/gantt">Gantt Chart</a>
+        <a href="/compare">Compare Algorithms</a>
+    </div>
+</nav>
+
+<div class="gantt-container">
+
+    <div class="page-header">
+        <h1>Gantt Chart</h1>
+        <p>Visual representation of the patient scheduling timeline.</p>
+    </div>
+
+    <div class="chart-section">
+
+        <div id="algorithmName" class="algorithm-name"></div>
+
+        <div id="emptyMessage" class="empty-message">
+            Run the scheduler first to view the Gantt chart.
+        </div>
+
+        <div id="chartArea" style="display:none;">
+
+            <div id="ganttChart" class="gantt-chart"></div>
+
+            <div id="timeline" class="timeline"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const savedResults = sessionStorage.getItem("schedulerResults");
+
+    if (savedResults) {
+
+        const data = JSON.parse(savedResults);
+
+        document.getElementById("emptyMessage").style.display = "none";
+        document.getElementById("chartArea").style.display = "block";
+
+        document.getElementById("algorithmName").textContent =
+            "Algorithm: " + data.algorithm;
+
+        const chart = document.getElementById("ganttChart");
+        const timeline = document.getElementById("timeline");
+
+        data.gantt.forEach(segment => {
+
+            const block = document.createElement("div");
+
+            block.className = "gantt-block";
+
+            const duration = segment.end - segment.start;
+
+            block.style.flex = duration;
+
+            block.innerHTML = `
+                <div class="gantt-process">${segment.processId}</div>
+                <div class="gantt-time">
+                    ${segment.start} - ${segment.end}
+                </div>
+            `;
+
+            chart.appendChild(block);
+
+        });
+
+        data.gantt.forEach(segment => {
+
+            const time = document.createElement("div");
+
+            time.className = "timeline-value";
+
+            time.textContent = segment.start;
+
+            timeline.appendChild(time);
+
+        });
+
+        if (data.gantt.length > 0) {
+
+            const lastTime = document.createElement("div");
+
+            lastTime.className = "timeline-value";
+
+            lastTime.textContent =
+                data.gantt[data.gantt.length - 1].end;
+
+            timeline.appendChild(lastTime);
+        }
+
+    }
+
+</script>
+
+</body>
+</html>

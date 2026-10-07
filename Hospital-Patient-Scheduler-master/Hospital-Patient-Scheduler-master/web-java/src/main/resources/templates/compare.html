@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Algorithms - Hospital Patient Scheduler</title>
+
+    <link rel="stylesheet" href="/style.css">
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+.navbar {
+    width: 100%;
+    min-height: 72px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 6%;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.navbar nav a {
+    color: #475467;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.navbar nav a:hover {
+    color: #2563eb;
+}
+
+.compare-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px 50px;
+    box-sizing: border-box;
+}
+
+.input-section,
+.comparison-section {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #667085;
+    font-size: 17px;
+}
+
+/* FORM BOX */
+
+.input-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.input-section h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+}
+
+/* FIVE INPUTS */
+
+.input-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.input-row input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.input-row input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+
+.input-row input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* BUTTONS */
+
+.add-btn,
+.compare-btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.add-btn {
+    background: #eeeeee;
+    color: #172033;
+}
+
+.add-btn:hover {
+    background: #dddddd;
+}
+
+.compare-btn {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.compare-btn:hover {
+    background: #1d4ed8;
+}
+
+/* PROCESS LIST */
+
+.process-list {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.process-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.error {
+    margin-top: 12px;
+    color: #c62828;
+}
+
+/* RESULTS */
+
+.comparison-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    overflow-x: auto;
+}
+
+.comparison-section h2 {
+    margin-top: 0;
+}
+
+.metric-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin: 20px 0 35px;
+    box-sizing: border-box;
+}
+
+.algorithm-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.algorithm-card {
+    min-width: 0;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid #e2e2e2;
+    background: #fafafa;
+}
+
+.algorithm-card h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 12px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.metric-value {
+    font-weight: 700;
+}
+
+.gantt-title {
+    margin-top: 30px !important;
+}
+
+.mini-gantt {
+    width: 100%;
+    min-height: 60px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th,
+td {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+th {
+    background: #f5f7fb;
+    font-weight: 700;
+}
+
+/* TABLETS */
+/* PHONES */
+@media (max-width: 1000px) {
+
+    .compare-container {
+        max-width: 95%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .input-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .navbar {
+        min-height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+    }
+
+    .navbar nav {
+        gap: 15px;
+    }
+
+    .compare-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 0 12px 40px;
+    }
+
+    .input-section,
+    .comparison-section {
+        padding: 18px;
+    }
+
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    .page-header p {
+        font-size: 15px;
+    }
+
+    .algorithm-card {
+        padding: 16px;
+    }
+}
+</style>
+</head> 
+
+<body>
+   <header class="navbar">
+    <div class="logo">
+        🏥 Hospital Patient Scheduler
+    </div>
+
+   <nav>
+    <a href="/">Home</a>
+    <a href="/scheduler">Scheduler</a>
+    <a href="/compare">Compare</a>
+</nav>
+</header>
+<div class="compare-container">
+
+    <div class="page-header">
+        <h1>Compare Scheduling Algorithms</h1>
+        <p>Run the same patient workload using both scheduling algorithms.</p>
+    </div>
+
+    <div class="input-section">
+
+        <h2>Patient / Process Input</h2>
+
+        <div class="input-row">
+            <input id="processId" placeholder="Process ID (P1)">
+            <input id="taskName" placeholder="Task Name">
+            <input id="arrival" type="number" placeholder="Arrival Time">
+            <input id="burst" type="number" placeholder="Burst Time">
+            <input id="priority" type="number" placeholder="Priority">
+        </div>
+
+        <button class="add-btn" onclick="addProcess()">
+            Add Process
+        </button>
+
+        <div id="processList" class="process-list"></div>
+
+        <button class="compare-btn" onclick="compareAlgorithms()">
+            Compare Algorithms
+        </button>
+
+        <div id="errorMessage" class="error"></div>
+
+    </div>
+
+    <div id="results" class="comparison-section" style="display:none;">
+
+        <h2>Performance Comparison</h2>
+
+        <div class="metric-grid">
+
+            <div class="algorithm-card">
+
+                <h3>Non-Preemptive Priority</h3>
+
+                <div class="metric">
+                    <span>Average Waiting Time</span>
+                    <span id="npWaiting" class="metric-value">--</span>
+                </div>
+
+                <div class="metric">
+                    <span>Average Turnaround Time</span>
+                    <span id="npTurnaround" class="metric-value">--</span>
+                </div>
+
+                <div class="metric">
+                    <span>Average Response Time</span>
+                    <span id="npResponse" class="metric-value">--</span>
+                </div>
+
+            </div>
+
+            <div class="algorithm-card">
+
+                <h3>Preemptive Priority</h3>
+
+                <div class="metric">
+                    <span>Average Waiting Time</span>
+                    <span id="pWaiting" class="metric-value">--</span>
+                </div>
+
+                <div class="metric">
+                    <span>Average Turnaround Time</span>
+                    <span id="pTurnaround" class="metric-value">--</span>
+                </div>
+
+                <div class="metric">
+                    <span>Average Response Time</span>
+                    <span id="pResponse" class="metric-value">--</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <h2 class="gantt-title">Non-Preemptive Gantt Chart</h2>
+        <div id="npGantt" class="mini-gantt"></div>
+
+        <h2 class="gantt-title">Preemptive Gantt Chart</h2>
+        <div id="pGantt" class="mini-gantt"></div>
+
+        <h2 class="gantt-title">Process Comparison</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    <th>NP Waiting</th>
+                    <th>P Waiting</th>
+                    <th>NP Turnaround</th>
+                    <th>P Turnaround</th>
+                    <th>NP Response</th>
+                    <th>P Response</th>
+                </tr>
+            </thead>
+
+            <tbody id="comparisonBody"></tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    let processes = JSON.parse(
+    sessionStorage.getItem("schedulerProcesses") || "[]"
+);
+
+displayProcesses();
+
+    function addProcess() {
+
+        const id = document.getElementById("processId").value.trim();
+        const task = document.getElementById("taskName").value.trim();
+
+        const arrival = Number(document.getElementById("arrival").value);
+        const burst = Number(document.getElementById("burst").value);
+        const priority = Number(document.getElementById("priority").value);
+
+        if (!id || Number.isNaN(arrival) ||
+            Number.isNaN(burst) || Number.isNaN(priority)) {
+
+            document.getElementById("errorMessage").textContent =
+                "Please enter Process ID, Arrival Time, Burst Time and Priority.";
+
+            return;
+        }
+
+        if (burst <= 0) {
+            document.getElementById("errorMessage").textContent =
+                "Burst time must be greater than 0.";
+
+            return;
+        }
+
+        processes.push({
+            id: id,
+            task: task,
+            arrival: arrival,
+            burst: burst,
+            priority: priority
+        });
+
+        document.getElementById("processId").value = "";
+        document.getElementById("taskName").value = "";
+        document.getElementById("arrival").value = "";
+        document.getElementById("burst").value = "";
+        document.getElementById("priority").value = "";
+
+        document.getElementById("errorMessage").textContent = "";
+
+        displayProcesses();
+    }
+
+    function displayProcesses() {
+
+        const list = document.getElementById("processList");
+
+        list.innerHTML = "";
+
+        processes.forEach((process, index) => {
+
+            const item = document.createElement("div");
+
+            item.className = "process-item";
+
+            item.innerHTML = `
+                <span>
+                    ${process.id} -
+                    ${process.task || "Patient Task"} |
+                    Arrival: ${process.arrival} |
+                    Burst: ${process.burst} |
+                    Priority: ${process.priority}
+                </span>
+
+                <button onclick="removeProcess(${index})">
+                    Remove
+                </button>
+            `;
+
+            list.appendChild(item);
+        });
+    }
+
+    function removeProcess(index) {
+
+        processes.splice(index, 1);
+
+        displayProcesses();
+    }
+
+    async function runAlgorithm(algorithm) {
+
+        const response = await fetch("/api/schedule", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                algorithm: algorithm,
+                processes: processes
+            })
+
+        });
+
+        if (!response.ok) {
+            throw new Error("Scheduling request failed.");
+        }
+
+        return await response.json();
+    }
+
+    async function compareAlgorithms() {
+
+        const error = document.getElementById("errorMessage");
+
+        error.textContent = "";
+
+        if (processes.length === 0) {
+
+            error.textContent =
+                "Please add at least one process.";
+
+            return;
+        }
+
+        try {
+
+            const nonPreemptive =
+                await runAlgorithm("non-preemptive");
+
+            const preemptive =
+                await runAlgorithm("preemptive");
+
+            displayComparison(
+                nonPreemptive,
+                preemptive
+            );
+
+        } catch (err) {
+
+            error.textContent =
+                "Unable to compare algorithms. Make sure the scheduler server is running.";
+
+            console.error(err);
+        }
+    }
+
+    function displayComparison(np, p) {
+
+        document.getElementById("results").style.display =
+            "block";
+
+        document.getElementById("npWaiting").textContent =
+            Number(np.averageWaiting).toFixed(2);
+
+        document.getElementById("npTurnaround").textContent =
+            Number(np.averageTurnaround).toFixed(2);
+
+        document.getElementById("npResponse").textContent =
+            Number(np.averageResponse).toFixed(2);
+
+        document.getElementById("pWaiting").textContent =
+            Number(p.averageWaiting).toFixed(2);
+
+        document.getElementById("pTurnaround").textContent =
+            Number(p.averageTurnaround).toFixed(2);
+
+        document.getElementById("pResponse").textContent =
+            Number(p.averageResponse).toFixed(2);
+
+        displayGantt(
+            "npGantt",
+            np.gantt
+        );
+
+        displayGantt(
+            "pGantt",
+            p.gantt
+        );
+
+        displayProcessComparison(
+            np.processResults,
+            p.processResults
+        );
+    }
+
+    function displayGantt(elementId, gantt) {
+
+        const container =
+            document.getElementById(elementId);
+
+        container.innerHTML = "";
+
+        gantt.forEach(segment => {
+
+            const block =
+                document.createElement("div");
+
+            block.className = "gantt-block";
+
+            const duration =
+                segment.end - segment.start;
+
+            block.style.flex = duration;
+
+            block.innerHTML = `
+                <strong>${segment.processId}</strong>
+                <br>
+                ${segment.start} - ${segment.end}
+            `;
+
+            container.appendChild(block);
+        });
+    }
+
+    function displayProcessComparison(npResults, pResults) {
+
+        const body =
+            document.getElementById("comparisonBody");
+
+        body.innerHTML = "";
+
+        const preemptiveMap = {};
+
+        pResults.forEach(process => {
+            preemptiveMap[process.id] = process;
+        });
+
+        npResults.forEach(npProcess => {
+
+            const pProcess =
+                preemptiveMap[npProcess.id];
+
+            if (!pProcess) {
+                return;
+            }
+
+            const row =
+                document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${npProcess.id}</td>
+                <td>${npProcess.waiting}</td>
+                <td>${pProcess.waiting}</td>
+                <td>${npProcess.turnaround}</td>
+                <td>${pProcess.turnaround}</td>
+                <td>${npProcess.response}</td>
+                <td>${pProcess.response}</td>
+            `;
+
+            body.appendChild(row);
+        });
+    }
+
+</script>
+
+</body>
+</html>

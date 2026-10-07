@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Metrics - Hospital Patient Scheduler</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        .metrics-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .page-header h1 {
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .metric-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .results-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f4f6f8;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        @media (max-width: 800px) {
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">Hospital Patient Scheduler</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/scheduler">Scheduler</a>
+        <a href="/metrics">Performance Metrics</a>
+        <a href="/gantt">Gantt Chart</a>
+        <a href="/compare">Compare Algorithms</a>
+    </div>
+</nav>
+
+<div class="metrics-container">
+
+    <div class="page-header">
+        <h1>Performance Metrics</h1>
+        <p>Analyze the performance of the patient scheduling algorithm.</p>
+    </div>
+
+    <div class="metric-grid">
+
+        <div class="metric-card">
+            <h3>Average Waiting Time</h3>
+            <div class="metric-value" id="avgWaiting">--</div>
+        </div>
+
+        <div class="metric-card">
+            <h3>Average Turnaround Time</h3>
+            <div class="metric-value" id="avgTurnaround">--</div>
+        </div>
+
+        <div class="metric-card">
+            <h3>Average Response Time</h3>
+            <div class="metric-value" id="avgResponse">--</div>
+        </div>
+
+    </div>
+
+    <div class="results-section">
+
+        <h2>Process-wise Performance</h2>
+
+        <div id="emptyMessage" class="empty-message">
+            Run the scheduler first to view performance metrics.
+        </div>
+
+        <table id="resultsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Process ID</th>
+                    <th>Arrival Time</th>
+                    <th>Burst Time</th>
+                    <th>Priority</th>
+                    <th>Completion Time</th>
+                    <th>Turnaround Time</th>
+                    <th>Waiting Time</th>
+                    <th>Response Time</th>
+                </tr>
+            </thead>
+
+            <tbody id="resultsBody"></tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+    const savedResults = sessionStorage.getItem("schedulerResults");
+
+    if (savedResults) {
+
+        const data = JSON.parse(savedResults);
+
+        document.getElementById("avgWaiting").textContent =
+            Number(data.averageWaiting).toFixed(2);
+
+        document.getElementById("avgTurnaround").textContent =
+            Number(data.averageTurnaround).toFixed(2);
+
+        document.getElementById("avgResponse").textContent =
+            Number(data.averageResponse).toFixed(2);
+
+        const table = document.getElementById("resultsTable");
+        const emptyMessage = document.getElementById("emptyMessage");
+        const body = document.getElementById("resultsBody");
+
+        emptyMessage.style.display = "none";
+        table.style.display = "table";
+
+        data.processResults.forEach(process => {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${process.id}</td>
+                <td>${process.arrival}</td>
+                <td>${process.burst}</td>
+                <td>${process.priority}</td>
+                <td>${process.completion}</td>
+                <td>${process.turnaround}</td>
+                <td>${process.waiting}</td>
+                <td>${process.response}</td>
+            `;
+
+            body.appendChild(row);
+        });
+
+    }
+</script>
+
+</body>
+</html>
